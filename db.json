@@ -9,6 +9,21 @@
       "timestamp": "2026-03-31T18:35:19.688Z",
       "original": "My secret key is sk-123456789. Don't tell anyone!",
       "was_redacted": true
+    },
+    {
+      "timestamp": "2026-03-31T20:09:01.045Z",
+      "original": "My name is Nicolas, my email is nick@wealth.com, and my secret key is sk-998877",
+      "was_redacted": true
+    },
+    {
+      "timestamp": "2026-03-31T20:10:50.056Z",
+      "original": "My name is Nicolas, my email is bomioluremekun@gmail.com, and my secret key is PMAK-69c55c368b05fd000162e792-XXXX",
+      "was_redacted": true
+    },
+    {
+      "timestamp": "2026-03-31T20:10:55.990Z",
+      "original": "My name is Nicolas, my email is bomioluremekun@gmail.com, and my secret key is PMAK-69c55c368b05fd000162e792-XXXX",
+      "was_redacted": true
     }
   ]
 }
