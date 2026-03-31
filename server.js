@@ -1,12 +1,12 @@
-const { JSONFilePreset } = require('lowdb/node');
-require('dotenv').config();
-let db;
-const express = require('express');
-const { Redactor, DefaultMatchers } = require('pii-redact');
-const axios = require('axios');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
+import 'dotenv/config';
+import express from 'express';
+import { Redactor, DefaultMatchers } from 'pii-redact';
+import axios from 'axios';
+import helmet from 'helmet';
+import { JSONFilePreset } from 'lowdb/node';
+import rateLimit from 'express-rate-limit';
 
+const db = await JSONFilePreset('db.json', { logs: [] });
 const app = express();
 app.use(express.json());
 app.use(helmet()); // Protects against common web vulnerabilities
@@ -75,8 +75,4 @@ app.get('/health', (req, res) => {
     res.status(200).send("Gateway is Online and Secure");
 });
 
-(async () => {
-    // This creates a file called db.json automatically
-    db = await JSONFilePreset('db.json', { logs: [] });
-    app.listen(3000, () => console.log("Gateway running on http://localhost:3000"));
-})();
+app.listen(3000, () => console.log("Gateway running on http://localhost:3000"));
