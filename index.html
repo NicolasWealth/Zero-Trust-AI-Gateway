@@ -187,33 +187,41 @@
 
           const handleSubmit = async () => {
             if (!prompt.trim() || isProcessing) return;
+            
             setIsProcessing(true);
             setIsAnimating(true);
             setShowResults(true);
-            setResult(null);
-
+            setResult(null); // Reset the screen
             const startTime = Date.now();
 
             try {
+                // 1. Send the data to YOUR server endpoint
                 const response = await fetch('/ask-ai', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ prompt: prompt })
                 });
+
                 const data = await response.json();
-                
-                // This maps your Backend Data to the Readdy UI
+
+                // 2. Map the Gateway response to the Readdy UI
+                // We count the [REDACTED] tags to show in the stats
+                const redactionCount = (data.redacted_version.match(/\[REDACTED/g) || []).length;
+
                 setResult({
                     redacted: data.redacted_version,
-                    aiResponse: data.ai_answer,
-                    redactedCount: (data.redacted_version.match(/\[REDACTED/g) || []).length
+                    redactedCount: redactionCount,
+                    aiResponse: data.ai_answer
                 });
-            } catch (error) {
-                console.error("Gateway Error:", error);
-            } finally {
-                setIsAnimating(false);
+
                 setProcessingTime((Date.now() - startTime) / 1000);
                 setRequestCount((c) => c + 1);
+
+            } catch (error) {
+                console.error("Gateway Error:", error);
+                alert("The Security Gateway is offline. Check your terminal!");
+            } finally {
+                setIsAnimating(false);
                 setIsProcessing(false);
             }
           };
