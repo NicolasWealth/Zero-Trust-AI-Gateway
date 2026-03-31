@@ -1,0 +1,9 @@
+name: Security Scan
+on: [push]
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Security Audit
+        run: npm audit # Checks if your libraries have known hacks
