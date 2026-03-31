@@ -6,6 +6,7 @@ const express = require('express');
 const { Redactor, DefaultMatchers } = require('pii-redact');
 const axios = require('axios');
 const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 app.use(express.json());
@@ -17,12 +18,21 @@ const redactor = new Redactor({ matchers: DefaultMatchers });
 const customShield = (text) => {
     // This looks for things like "password: 123" or "SECRET_KEY = xyz"
     const secretPattern = /(password|secret|key|token|authorization)\s*[:=]\s*[a-zA-Z0-9_-]{4,}/gi;
-    
+
     if (secretPattern.test(text)) {
         return text.replace(secretPattern, "[BLOCK: SENSITIVE_CREDENTIAL]");
     }
     return text;
 };
+
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10, // Limit each IP to 10 requests per window
+    message: "Too many requests from this IP, please try again after 15 minutes"
+});
+
+// Apply the limiter to your AI route
+app.use('/ask-ai', limiter);
 
 app.post('/ask-ai', async (req, res) => {
     const { prompt } = req.body;
@@ -59,6 +69,11 @@ app.post('/ask-ai', async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: "Communication failed" });
     }
+});
+
+// A simple endpoint to let a monitor know the gateway is alive
+app.get('/health', (req, res) => {
+    res.status(200).send("Gateway is Online and Secure");
 });
 
 app.listen(3000, () => console.log("Gateway running on http://localhost:3000"));
