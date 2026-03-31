@@ -1,1 +1,0 @@
-# Zero-Trust-AI-Gateway
