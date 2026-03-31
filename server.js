@@ -1,3 +1,6 @@
+const { JSONFilePreset } = require('lowdb/node');
+// This creates a file called db.json automatically
+const db = await JSONFilePreset('db.json', { logs: [] });
 require('dotenv').config();
 const express = require('express');
 const { Redactor, DefaultMatchers } = require('pii-redact');
