@@ -1,7 +1,6 @@
 const { JSONFilePreset } = require('lowdb/node');
-// This creates a file called db.json automatically
-const db = await JSONFilePreset('db.json', { logs: [] });
 require('dotenv').config();
+let db;
 const express = require('express');
 const { Redactor, DefaultMatchers } = require('pii-redact');
 const axios = require('axios');
@@ -76,4 +75,8 @@ app.get('/health', (req, res) => {
     res.status(200).send("Gateway is Online and Secure");
 });
 
-app.listen(3000, () => console.log("Gateway running on http://localhost:3000"));
+(async () => {
+    // This creates a file called db.json automatically
+    db = await JSONFilePreset('db.json', { logs: [] });
+    app.listen(3000, () => console.log("Gateway running on http://localhost:3000"));
+})();
