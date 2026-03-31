@@ -1,4 +1,4 @@
-# 🛡️ Zero-Trust AI Gateway
+#  Zero-Trust AI Gateway
 
 A lightweight, security-first Node.js proxy that sits between your application and the OpenAI API. It automatically strips sensitive data from prompts before they ever leave your infrastructure — so you can use AI safely, even with internal tooling.
 
