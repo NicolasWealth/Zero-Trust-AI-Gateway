@@ -8,6 +8,7 @@ import rateLimit from 'express-rate-limit';
 
 const db = await JSONFilePreset('db.json', { logs: [] });
 const app = express();
+app.use(express.static('.'));
 app.use(express.json());
 app.use(helmet()); // Protects against common web vulnerabilities
 
