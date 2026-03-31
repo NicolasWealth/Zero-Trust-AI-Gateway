@@ -1,19 +1,20 @@
 #  Zero-Trust AI Gateway
 
-A lightweight, security-first Node.js proxy that sits between your application and the OpenAI API. It automatically strips sensitive data from prompts before they ever leave your infrastructure — so you can use AI safely, even with internal tooling.
+A lightweight, security-first Node.js proxy that sits between your application and the OpenAI API. It automatically strips sensitive data from prompts before they ever leave your infrastructure — so you can use AI safely, even with internal tooling. Includes a built-in browser-based security console UI.
 
 ---
 
 ## How It Works
 
 ```
-Your App  →  [PII Redactor]  →  [Credential Shield]  →  [Audit Log]  →  OpenAI API
+Your App  →  [Rate Limiter]  →  [PII Redactor]  →  [Credential Shield]  →  [Audit Log]  →  OpenAI API
 ```
 
-Every incoming prompt is passed through two sanitization layers before being forwarded to OpenAI:
+Every incoming prompt passes through three protection layers before being forwarded to OpenAI:
 
-1. **PII Redactor** — uses `pii-redact` to detect and strip personally identifiable information (names, emails, phone numbers, etc.)
-2. **Custom Credential Shield** — regex-based filter that blocks secrets like `password: abc123` or `Authorization: Bearer xyz`
+1. **Rate Limiter** — `express-rate-limit` caps each IP at 10 requests per 15-minute window to prevent abuse
+2. **PII Redactor** — uses `pii-redact` to detect and strip personally identifiable information (names, emails, phone numbers, etc.)
+3. **Custom Credential Shield** — regex-based filter that blocks secrets like `password: abc123` or `Authorization: Bearer xyz`
 
 Both the original and redacted versions are logged locally via `lowdb` for auditing. Only the clean, redacted prompt is ever sent to OpenAI.
 
@@ -23,8 +24,12 @@ Both the original and redacted versions are logged locally via `lowdb` for audit
 
 - 🔒 Automatic PII redaction on every request
 - 🔑 Blocks credentials, tokens, and secrets from leaking into prompts
+- 🚦 Rate limiting — 10 requests per IP per 15 minutes
 - 📋 Local audit log (`db.json`) tracking all requests and whether redaction occurred
 - 🪖 HTTP security headers via `helmet`
+- 🖥️ Built-in browser UI (`index.html`) — security console with live redaction preview
+- 🐳 Docker support via `Dockerfile`
+- ❤️ Health check endpoint at `GET /health`
 - 🔁 Automated dependency vulnerability scanning via GitHub Actions (`npm audit` on every push)
 
 ---
@@ -35,6 +40,7 @@ Both the original and redacted versions are logged locally via `lowdb` for audit
 |---|---|
 | `express` v5 | HTTP server & routing |
 | `helmet` | Secure HTTP response headers |
+| `express-rate-limit` | Per-IP request rate limiting |
 | `pii-redact` | PII detection and redaction |
 | `axios` | Forwarding requests to OpenAI |
 | `lowdb` | Lightweight local JSON audit log |
@@ -73,7 +79,14 @@ OPENAI_API_KEY=your_openai_api_key_here
 node server.js
 ```
 
-The gateway will start at `http://localhost:3000`.
+The gateway will start at `http://localhost:3000`. Open that URL in your browser to access the security console UI.
+
+### Running with Docker
+
+```bash
+docker build -t zero-trust-ai-gateway .
+docker run -p 3000:3000 --env-file .env zero-trust-ai-gateway
+```
 
 ---
 
@@ -81,7 +94,7 @@ The gateway will start at `http://localhost:3000`.
 
 ### `POST /ask-ai`
 
-Send a prompt to the gateway. PII and credentials are automatically redacted before the request reaches OpenAI.
+Send a prompt to the gateway. PII and credentials are automatically redacted before the request reaches OpenAI. Limited to **10 requests per IP per 15 minutes**.
 
 **Request**
 
@@ -101,6 +114,14 @@ Send a prompt to the gateway. PII and credentials are automatically redacted bef
 }
 ```
 
+### `GET /health`
+
+Returns a plain-text confirmation that the gateway is running. Useful for uptime monitors and container health checks.
+
+```
+Gateway is Online and Secure
+```
+
 ---
 
 ## Audit Log
@@ -111,8 +132,8 @@ Every request is appended to `db.json` with the following structure:
 {
   "logs": [
     {
-      "timestamp": "2025-03-31T10:00:00.000Z",
-      "original": "My password is abc123",
+      "timestamp": "2026-03-31T18:24:24.781Z",
+      "original": "My secret key is sk-123456789. Don't tell anyone!",
       "was_redacted": true
     }
   ]
@@ -127,6 +148,8 @@ This gives you a full local record of what was received and whether sensitive da
 
 A GitHub Actions workflow (`.github/workflows/security.yml`) runs `npm audit` on every push to catch known vulnerabilities in project dependencies automatically.
 
+To report a vulnerability, see [SECURITY.md](./SECURITY.md).
+
 ---
 
 ## Project Structure
@@ -134,7 +157,10 @@ A GitHub Actions workflow (`.github/workflows/security.yml`) runs `npm audit` on
 ```
 Zero-Trust-AI-Gateway/
 ├── server.js                        # Main gateway server
+├── index.html                       # Browser-based security console UI
+├── Dockerfile                       # Container definition
 ├── package.json
+├── SECURITY.md                      # Vulnerability disclosure policy
 ├── .env                             # Your secrets (not committed)
 ├── db.json                          # Auto-generated audit log
 └── .github/
