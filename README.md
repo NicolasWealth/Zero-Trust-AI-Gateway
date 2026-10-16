@@ -2,7 +2,7 @@
 
 A small Express service that removes emails, phone numbers, card numbers and common credential patterns from a prompt before it is sent to a model. Every request is recorded in a tamper-evident audit log. It addresses the sensitive information disclosure risk in the OWASP LLM Top 10. It does not cover the whole list.
 
-Demo: _add the Vercel URL here after you deploy._ The public demo does not call a model.
+Demo: (https://zero-trust-ai-gateway.vercel.app/) The public demo does not call a model.
 
 ## What it does
 
