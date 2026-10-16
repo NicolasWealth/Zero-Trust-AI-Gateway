@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zero Trust AI Gateway</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main>
+    <h1>Zero Trust AI Gateway</h1>
+    <p class="sub">Redacts emails, phone numbers, card numbers and common credential patterns from a prompt before it goes anywhere. This public demo does not call a model.</p>
+
+    <section>
+      <label for="prompt">Prompt</label>
+      <textarea id="prompt" maxlength="4000" rows="6">My email is jane@example.com and my api_key=abcd1234efgh. Call me on +1 415-555-0132.</textarea>
+      <div class="row">
+        <button id="send" type="button">Send through gateway</button>
+        <span id="count" class="muted"></span>
+      </div>
+      <p id="error" class="error" hidden></p>
+    </section>
+
+    <section id="result" hidden>
+      <h2>Result</h2>
+      <p class="muted">Cleaned prompt</p>
+      <pre id="cleaned"></pre>
+      <p class="muted">Redactions found</p>
+      <pre id="categories"></pre>
+      <p id="note" class="muted"></p>
+    </section>
+
+    <section>
+      <h2>Audit log</h2>
+      <p class="muted">Each entry stores a hash of the cleaned prompt and the redaction categories, linked to the entry before it. The original prompt is never stored.</p>
+      <div class="row">
+        <button id="verify" type="button">Verify log</button>
+        <button id="tamper" type="button" class="secondary">Simulate tampering (on a copy)</button>
+        <button id="refresh" type="button" class="secondary">Show recent entries</button>
+      </div>
+      <p id="verifyOut" class="muted" aria-live="polite"></p>
+      <p id="tamperOut" class="muted" aria-live="polite"></p>
+      <div id="recent"></div>
+    </section>
+  </main>
+  <script src="/ui.js"></script>
+</body>
+</html>
