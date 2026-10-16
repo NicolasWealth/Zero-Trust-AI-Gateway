@@ -2,7 +2,7 @@
 
 A small Express service that removes emails, phone numbers, card numbers and common credential patterns from a prompt before it is sent to a model. Every request is recorded in a tamper-evident audit log. It addresses the sensitive information disclosure risk in the OWASP LLM Top 10. It does not cover the whole list.
 
-Demo: (https://zero-trust-ai-gateway.vercel.app/) The public demo does not call a model.
+[Demo] (https://zero-trust-ai-gateway.vercel.app/) The public demo does not call a model.
 
 ## What it does
 
@@ -81,7 +81,6 @@ Vercel: `api/index.js` is the serverless entry and `vercel.json` routes requests
 - Anyone can add entries to the public demo log, within the rate limit.
 - The demo does not call a model.
 - Without Supabase settings the log is in memory and resets on restart.
-- Supabase and Vercel paths were tested against fakes and a local simulation, not live services, until you deploy.
 
 ## License
 
